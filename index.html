@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>CARGA — Panel Cognitivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Firebase (compat — no build step required) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <!-- Fixed top bar — hidden on splash, always visible after onboarding -->
+  <header id="app-header" class="app-header hidden">
+    <span class="header-logo">CARGA</span>
+    <button id="btn-reiniciar" class="btn-reiniciar">↺ Reiniciar</button>
+  </header>
+
+  <!-- All screens are rendered into #app by app.js -->
+  <main id="app"></main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
