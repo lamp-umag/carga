@@ -24,6 +24,10 @@
   <!-- All screens are rendered into #app by app.js -->
   <main id="app"></main>
 
+  <script>
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('selectstart',  e => e.preventDefault());
+  </script>
   <script type="module" src="app.js"></script>
 </body>
 </html>

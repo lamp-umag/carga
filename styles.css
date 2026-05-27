@@ -4,7 +4,14 @@
    ═══════════════════════════════════════════════════════ */
 
 /* ── Reset & Base ───────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none; /* blocks iOS long-press menu / Google Lens */
+}
 
 :root {
   --bg:         #0F172A;
@@ -22,6 +29,8 @@
   --radius-sm:  0.6rem;
   --header-h:   52px;
 }
+
+input, textarea { -webkit-user-select: text; user-select: text; }
 
 html, body {
   height: 100%;
