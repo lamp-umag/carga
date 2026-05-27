@@ -121,7 +121,7 @@ async function runOnboarding() {
       <p class="splash-full">Cognitive Assessment Research<br/>Gamified Application</p>
       <p class="splash-sub">Herramienta de exploración cognitiva experimental</p>
       <button class="btn-primary splash-btn" id="btn-splash">Comenzar →</button>
-      <p class="splash-footer">LAMP · Laboratorio de Medición Psicosocial · UMAG</p>
+      <p class="splash-footer">LAMP · Laboratorio de Medición Psicosocial · Psicología UMAG</p>
     </div>`);
   await new Promise(r => app.querySelector('#btn-splash').addEventListener('click', r, { once: true }));
 
