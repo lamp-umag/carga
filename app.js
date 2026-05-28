@@ -261,7 +261,15 @@ async function startTest(testId) {
     return;
   }
 
-  saveResult(testId, results);
+  saveResult(testId, results);  // localStorage
+
+  // Save to Firestore immediately — don't wait on beforeunload
+  saveSession({
+    session_id:  STATE.sessionId,
+    participant: STATE.participant,
+    results:     STATE.results,
+  });
+
   await showResults(meta, results, container);
   showHeader(true);
 }
@@ -371,16 +379,7 @@ async function boot() {
   await runOnboarding();
   renderHub();
 
-  // Persist session on page unload if any tests were done
-  window.addEventListener('beforeunload', () => {
-    if (Object.keys(STATE.results).length > 0 && STATE.participant) {
-      saveSession({
-        session_id:  STATE.sessionId,
-        participant: STATE.participant,
-        results:     STATE.results,
-      });
-    }
-  });
+  // beforeunload removed — saves happen immediately after each test
 }
 
 boot();
