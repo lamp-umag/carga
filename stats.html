@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CARGA — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Dashboard overrides — this page is scrollable, not fixed */
+    html, body { overflow: auto !important; height: auto !important; }
+
+    .pin-screen {
+      min-height: 100dvh; display: flex;
+      align-items: center; justify-content: center; padding: 1.5rem;
+    }
+    .pin-card {
+      width: 100%; max-width: 380px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2rem; display: flex;
+      flex-direction: column; gap: 0.75rem;
+    }
+
+    .dash-wrap { max-width: 900px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+
+    .dash-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 1rem; margin-bottom: 1.5rem;
+    }
+    .dash-header .header-logo { margin-bottom: 0.3rem; }
+
+    .stat-overview {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem;
+      margin-bottom: 2rem;
+    }
+    @media (min-width: 600px) { .stat-overview { grid-template-columns: repeat(4, 1fr); } }
+
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.1rem;
+    }
+    .stat-val   { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.02em; }
+    .stat-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
+                  text-transform: uppercase; letter-spacing: 0.07em; margin-top: 0.2rem; }
+    .stat-sub   { font-weight: 400; opacity: 0.7; }
+
+    .dash-section {
+      border-top: 1px solid var(--border); padding-top: 1.5rem; margin-top: 2rem;
+    }
+    .section-title {
+      font-size: 1.1rem; font-weight: 800; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .section-n {
+      font-size: 0.72rem; font-weight: 600; color: var(--text-muted);
+      background: var(--surface-2); border: 1px solid var(--border);
+      padding: 0.2rem 0.55rem; border-radius: 999px; letter-spacing: 0; font-style: normal;
+    }
+
+    .mini-stats {
+      display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;
+    }
+    .mini-stat {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 0.5rem 0.75rem;
+      display: flex; flex-direction: column; gap: 0.1rem;
+    }
+    .ms-val   { font-size: 1.1rem; font-weight: 800; }
+    .ms-label { font-size: 0.68rem; font-weight: 600; color: var(--text-muted);
+                text-transform: uppercase; letter-spacing: 0.06em; }
+
+    .charts-row { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
+    @media (min-width: 600px) { .charts-row { grid-template-columns: 1fr 1fr; } }
+
+    .chart-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.1rem;
+    }
+    .chart-card.wide { grid-column: 1 / -1; }
+    .chart-card h3   { font-size: 0.78rem; font-weight: 700; color: var(--text-muted);
+                       text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.75rem; }
+
+    .no-data    { font-size: 0.88rem; color: var(--text-muted); padding: 0.5rem 0; }
+    .loading-text { font-size: 0.95rem; color: var(--text-muted); padding: 1rem 0; grid-column: 1/-1; }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- PIN gate -->
+  <div id="pin-screen" class="pin-screen">
+    <div class="pin-card">
+      <div class="header-logo">CARGA</div>
+      <h2 style="font-size:1.3rem">Dashboard de Resultados</h2>
+      <p class="subtitle" style="font-size:0.88rem;color:var(--text-muted)">Acceso para investigadores</p>
+      <input id="pin-input" type="password" class="qa-input" placeholder="Código de acceso" />
+      <p id="pin-error" class="form-error hidden">Código incorrecto.</p>
+      <button id="pin-btn" class="btn-primary">Entrar →</button>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="hidden">
+    <div class="dash-wrap">
+
+      <header class="dash-header">
+        <div>
+          <div class="header-logo">CARGA</div>
+          <h1 class="hub-title" style="font-size:1.6rem">Dashboard</h1>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-top:0.2rem" id="last-updated"></p>
+        </div>
+        <div style="display:flex;gap:0.5rem;align-items:center;flex-shrink:0">
+          <a href="index.html" class="btn-secondary" style="width:auto;padding:0.5rem 0.9rem;font-size:0.85rem;text-decoration:none">← App</a>
+          <button id="btn-refresh" class="btn-secondary" style="width:auto;padding:0.5rem 0.9rem;font-size:0.85rem">↻</button>
+        </div>
+      </header>
+
+      <div class="stat-overview" id="stat-overview">
+        <div class="loading-text">Cargando…</div>
+      </div>
+
+      <section class="dash-section">
+        <h2 class="section-title">Demografía</h2>
+        <div class="charts-row">
+          <div class="chart-card"><h3>Por curso</h3><canvas id="chart-curso"></canvas></div>
+          <div class="chart-card"><h3>Por género</h3><canvas id="chart-gender"></canvas></div>
+        </div>
+      </section>
+
+      <div id="test-sections"></div>
+
+    </div>
+  </div>
+
+  <script type="module" src="stats.js"></script>
+</body>
+</html>
