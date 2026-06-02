@@ -2,7 +2,7 @@
 
 A modern, tablet-optimized cognitive test suite built for psychology demos, science fairs, and educational research. Hosted on GitHub Pages with optional Firebase Firestore data collection.
 
-Developed at the **Laboratorio de Aprendizaje y Motivación (LAMP)**, Universidad de Magallanes.
+Developed at the **Laboratorio Austral de Medición Psicosocial**, Universidad de Magallanes.
 
 👉 **[README en Español](README_ES.md)**
 
