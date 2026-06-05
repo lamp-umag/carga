@@ -630,6 +630,28 @@ h3 { font-size: 1rem; font-weight: 700; }
 .rt-sublabel { font-size: 0.85rem; color: var(--text-muted); }
 .rt-feedback { font-size: 0.9rem; color: var(--text-muted); }
 
+/* ── RT hit flash (test-mode response confirmation) ─── */
+@keyframes rtHitFlash {
+  0%   { transform: scale(1);    opacity: 0.9;  box-shadow: 0 0 50px rgba(255,255,255,0.45); }
+  100% { transform: scale(0.52); opacity: 0;    box-shadow: none; }
+}
+
+.rt-hit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.rt-circle-flash {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: #ffffff;
+  animation: rtHitFlash 0.32s ease-out forwards;
+}
+
 /* ── Digit span ─────────────────────────────────────── */
 .digitspan-show {
   flex: 1;
@@ -916,3 +938,66 @@ h3 { font-size: 1rem; font-weight: 700; }
 }
 .history-body p strong, .history-body em { color: var(--text); font-style: italic; }
 .history-body strong { font-style: normal; }
+
+/* ── Sample battery banner ──────────────────────────── */
+.sample-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(99,102,241,0.04) 100%);
+  border: 1px solid rgba(99,102,241,0.30);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.sample-banner-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.15rem;
+}
+
+.sample-banner-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.sample-banner-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.sample-banner-btn {
+  width: auto;
+  padding: 0.65rem 1.2rem;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Sample intro task list ─────────────────────────── */
+.sample-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.9rem 1.1rem;
+}
+
+.sample-task-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
