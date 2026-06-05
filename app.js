@@ -11,16 +11,13 @@ import { META as searchMeta, run as runSearch }     from './lib/tests/search.js'
 
 // ── Test registry ─────────────────────────────────────
 const TESTS = [
-  { meta: rtMeta,      run: runRT        },
   { meta: stroopMeta,  run: runStroop    },
-  { meta: gonogoMeta,  run: runGoNoGo    },
+  { meta: rtMeta,      run: runRT        },
   { meta: dsMeta,      run: runDigitSpan },
   { meta: flankerMeta, run: runFlanker   },
+  { meta: gonogoMeta,  run: runGoNoGo    },
   { meta: searchMeta,  run: runSearch    },
 ];
-
-// ── Sample battery ────────────────────────────────────
-const SAMPLE_IDS = ['rt', 'stroop', 'gonogo'];
 
 // ── DOM roots ─────────────────────────────────────────
 const app    = document.getElementById('app');
@@ -206,8 +203,6 @@ function renderHub() {
   }).join('');
 
   const doneCount = Object.keys(STATE.results).length;
-  const sampleDone = SAMPLE_IDS.filter(id => STATE.results[id]).length;
-  const sampleAllDone = sampleDone === SAMPLE_IDS.length;
 
   app.innerHTML = `
     <div class="hub">
@@ -218,24 +213,12 @@ function renderHub() {
         </div>
         ${doneCount > 0 ? `<div class="hub-progress-pill">${doneCount}/6 completadas</div>` : ''}
       </div>
-
-      <div class="sample-banner">
-        <div>
-          <p class="sample-banner-label">Batería de muestra</p>
-          <h3 class="sample-banner-title">RT · Stroop · Go/No-Go</h3>
-          <p class="sample-banner-sub">~6 min · ${sampleAllDone ? `${sampleDone}/3 completadas ✓` : `${sampleDone}/3 completadas`}</p>
-        </div>
-        <button class="btn-primary sample-banner-btn" id="btn-sample">${sampleAllDone ? 'Repetir' : 'Iniciar →'}</button>
+      <div class="hub-intro">
+        <p>Cada prueba mide un aspecto diferente de tu cognición. Puedes realizarlas en cualquier orden.</p>
       </div>
-
       <div class="tests-grid" id="tests-grid">${cards}</div>
     </div>`;
   fadeIn(app);
-
-  app.querySelector('#btn-sample')?.addEventListener('click', async () => {
-    await runSampleSequence();
-    renderHub();
-  });
 
   app.querySelectorAll('.btn-card').forEach(btn => {
     btn.addEventListener('click', async (e) => {
@@ -292,7 +275,7 @@ async function startTest(testId) {
 }
 
 // ── Results screen ────────────────────────────────────
-async function showResults(meta, results, container, buttonLabel = 'Volver al panel →') {
+async function showResults(meta, results, container) {
   const { summary } = results;
   const interp = meta.interpret(summary);
   const levelColors = { excellent: '#22C55E', good: '#6366F1', average: '#F59E0B', note: '#94A3B8' };
@@ -320,7 +303,7 @@ async function showResults(meta, results, container, buttonLabel = 'Volver al pa
         <div class="history-body">${meta.history}</div>
       </details>
 
-      <button class="btn-primary" id="btn-back">${buttonLabel}</button>
+      <button class="btn-primary" id="btn-back">Volver al panel →</button>
     </div>`;
   fadeIn(container);
 
@@ -377,55 +360,6 @@ function buildScoreCards(meta, s) {
   ].join('');
 
   return '';
-}
-
-// ── Sample battery sequence ───────────────────────────
-async function runSampleSequence() {
-  showHeader(false);
-
-  app.innerHTML = `
-    <div class="test-intro">
-      <div class="test-intro-icon" style="background:#6366F122;color:#6366F1">🧪</div>
-      <h2>Batería de muestra</h2>
-      <p>Tres tareas cognitivas en secuencia, sin interrupciones entre ellas.</p>
-      <div class="sample-task-list">
-        <div class="sample-task-item"><span style="color:#F59E0B">⚡</span>Tiempo de Reacción</div>
-        <div class="sample-task-item"><span style="color:#6366F1">🎨</span>Test de Stroop</div>
-        <div class="sample-task-item"><span style="color:#22C55E">🚦</span>Go / No-Go</div>
-      </div>
-      <p class="hint">~6 minutos en total</p>
-      <button class="btn-primary" id="btn-go">Comenzar →</button>
-    </div>`;
-  fadeIn(app);
-  await new Promise(r => app.querySelector('#btn-go').addEventListener('click', r, { once: true }));
-
-  for (let i = 0; i < SAMPLE_IDS.length; i++) {
-    const testId = SAMPLE_IDS[i];
-    const entry = TESTS.find(t => t.meta.id === testId);
-    if (!entry) continue;
-    const { meta, run } = entry;
-
-    showHeader(false);
-    app.innerHTML = `<div id="test-container" class="test-container"></div>`;
-    const container = document.getElementById('test-container');
-
-    let results;
-    try {
-      results = await run(container);
-    } catch (e) {
-      console.error('[CARGA] Sample task error:', e);
-      continue;
-    }
-
-    saveResult(testId, results);
-    saveSession({ session_id: STATE.sessionId, participant: STATE.participant, results: STATE.results });
-
-    const isLast = i === SAMPLE_IDS.length - 1;
-    const btnLabel = isLast ? 'Ver resultados del panel →' : 'Siguiente prueba →';
-    await showResults(meta, results, container, btnLabel);
-  }
-
-  showHeader(true);
 }
 
 // ── Reiniciar ─────────────────────────────────────────
